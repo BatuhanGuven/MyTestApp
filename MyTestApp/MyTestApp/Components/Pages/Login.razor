@@ -1,7 +1,8 @@
 ﻿@page "/login"
 @layout MyTestApp.Components.Layout.LoginLayout
 @inject HttpClient httpClient
-
+@inject CustomAuthenticationStateProvider customAuthenticationStateProvider
+@inject NavigationManager navigationManager
 @using Models
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center pt-10">
@@ -49,10 +50,33 @@
   public LoginModel LoginModelObject = new LoginModel();
   private async Task MySubmitVoid()
   {
-    form.Validate();
+    await form.Validate();
+
     if (form.IsValid)
     {
-      await httpClient.GetFromJsonAsync("/login");
+      HttpResponseMessage? response = await httpClient.PostAsJsonAsync("/login",LoginModelObject);
+      if(response is not null)
+      {
+        LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        if (response.IsSuccessStatusCode)
+        {
+          if (result is not null)
+          {
+            customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
+            navigationManager.NavigateTo("/");
+          }
+        }
+        else
+        {
+          customAuthenticationStateProvider.MarkUserAsLoggedout();
+          navigationManager.NavigateTo("/login");
+        }
+      }
+      else
+      {
+        Console.WriteLine("");
+      }
+
     }
   }
 }
