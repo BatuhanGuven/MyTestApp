@@ -1,8 +1,9 @@
-using MyTestApp.Components;
-using MudBlazor.Services;
 using Microsoft.AspNetCore.Components;
-using MyTestApp.Providers;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor.Services;
+using MyTestApp.Components;
+using MyTestApp.Providers;
+using MyTestApp.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
@@ -12,6 +13,7 @@ builder.Services.AddMudServices();
 builder.Services.AddHttpClient();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddSingleton<CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
