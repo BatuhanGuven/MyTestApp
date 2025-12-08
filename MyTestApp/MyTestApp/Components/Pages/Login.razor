@@ -3,6 +3,7 @@
 @inject HttpClient httpClient
 @inject CustomAuthenticationStateProvider customAuthenticationStateProvider
 @inject NavigationManager navigationManager
+@inject IHttpClientFactory httpClientFactory
 @using Models
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center pt-10">
@@ -56,7 +57,7 @@
     {
       try
       {
-        httpClient.Timeout = TimeSpan.FromSeconds(100);
+        HttpClient httpClient = httpClientFactory.CreateClient();
         HttpResponseMessage? response = await httpClient.PostAsJsonAsync("https://localhost:7244/api/Auth/login", LoginModelObject);
         if (response is not null)
         {
@@ -65,8 +66,15 @@
           {
             if (result is not null)
             {
-              customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
-              navigationManager.NavigateTo("/");
+              try
+              {
+                customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
+                navigationManager.NavigateTo("/");
+                StateHasChanged();
+              }catch (NavigationException ex)
+              {
+                throw ex;
+              }
             }
           }
           else
@@ -84,8 +92,6 @@
       {
         Console.WriteLine(ex);
       }
-
-
     }
   }
 }

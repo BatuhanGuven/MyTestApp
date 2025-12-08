@@ -26,9 +26,9 @@ else
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
-
+app.UseRouting();
 app.UseHttpsRedirection();
-
+app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapControllers();
