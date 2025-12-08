@@ -9,36 +9,24 @@
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center pt-10">
   <MudCard Elevation="20" Class="pa-6" Style="width: 100%;">
-
     <MudCardHeader>
       <MudText Typo="Typo.h4" Align="Align.Center">Hesabınıza Giriş Yapın</MudText>
     </MudCardHeader>
-
     <MudCardContent>
       <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" Model="LoginModelObject">
-        <MudTextField T="string" Label="E-posta Adresi" Required="true"
-                      InputType="InputType.Email" Immediate="true" @bind-Value = "LoginModelObject.Mail"/>
-
-        <MudTextField T="string" Label="Şifre" Required="true"
-                      InputType="InputType.Password" Class="mt-3" @bind-Value = "LoginModelObject.Password"/>
+        <MudTextField T="string" Label="E-posta Adresi" Required="true" InputType="InputType.Email" Immediate="true" @bind-Value="LoginModelObject.Mail" />
+        <MudTextField T="string" Label="Şifre" Required="true" InputType="InputType.Password" Class="mt-3" @bind-Value="LoginModelObject.Password" />
 
         <div class="d-flex justify-space-between pt-4">
           <MudCheckBox T="bool" Label="Beni Hatırla" />
           <MudLink Href="/forgotpassword" Typo="Typo.subtitle2">Şifremi Unuttum</MudLink>
         </div>
 
-        <MudButton ButtonType="ButtonType.Submit"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Disabled="@(!success)"
-                   FullWidth="true"
-                   Class="mt-6"
-                   OnClick="(() => MySubmitVoid())">
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" FullWidth="true" Class="mt-6" OnClick="MySubmitVoid">
           Giriş Yap
         </MudButton>
       </MudForm>
     </MudCardContent>
-
     <MudCardActions Class="d-flex justify-center">
       <MudText Typo="Typo.subtitle2">Hesabınız yok mu? <MudLink Href="/register">Kaydolun</MudLink></MudText>
     </MudCardActions>
@@ -50,48 +38,35 @@
   bool success;
   string[] errors = { };
   public LoginModel LoginModelObject = new LoginModel();
+
   private async Task MySubmitVoid()
   {
     await form.Validate();
-
     if (form.IsValid)
     {
       try
       {
-        HttpClient httpClient = httpClientFactory.CreateClient("ServerAPI");
-        HttpResponseMessage? response = await httpClient.PostAsJsonAsync("/api/Auth/login", LoginModelObject);
-        if (response is not null)
+        var client = httpClientFactory.CreateClient("ServerAPI");
+        var response = await client.PostAsJsonAsync("/api/Auth/login", LoginModelObject);
+
+        if (response.IsSuccessStatusCode)
         {
-          LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-          if (response.IsSuccessStatusCode)
+          var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+          if (result is not null)
           {
-            if (result is not null)
-            {
-              try
-              {
-                customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
-                navigationManager.NavigateTo("/",true);
-                StateHasChanged();
-              }catch (NavigationException ex)
-              {
-                throw ex;
-              }
-            }
-          }
-          else
-          {
-            customAuthenticationStateProvider.MarkUserAsLoggedout();
-            navigationManager.NavigateTo("/login");
+            customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
+            navigationManager.NavigateTo("/", true);
           }
         }
         else
         {
-          Console.WriteLine("");
+          // Hatalı giriş durumunda kullanıcıyı bilgilendirebilirsiniz veya çıkış işlemi yapabilirsiniz
+          customAuthenticationStateProvider.MarkUserAsLoggedout();
         }
       }
-      catch(Exception ex)
+      catch (Exception)
       {
-        Console.WriteLine(ex);
+        // Hata loglama işlemi buraya eklenebilir
       }
     }
   }
