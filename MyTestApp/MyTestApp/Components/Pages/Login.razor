@@ -54,28 +54,37 @@
 
     if (form.IsValid)
     {
-      HttpResponseMessage? response = await httpClient.PostAsJsonAsync("/login",LoginModelObject);
-      if(response is not null)
+      try
       {
-        LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        if (response.IsSuccessStatusCode)
+        httpClient.Timeout = TimeSpan.FromSeconds(100);
+        HttpResponseMessage? response = await httpClient.PostAsJsonAsync("https://localhost:7244/api/Auth/login", LoginModelObject);
+        if (response is not null)
         {
-          if (result is not null)
+          LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+          if (response.IsSuccessStatusCode)
           {
-            customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
-            navigationManager.NavigateTo("/");
+            if (result is not null)
+            {
+              customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
+              navigationManager.NavigateTo("/");
+            }
+          }
+          else
+          {
+            customAuthenticationStateProvider.MarkUserAsLoggedout();
+            navigationManager.NavigateTo("/login");
           }
         }
         else
         {
-          customAuthenticationStateProvider.MarkUserAsLoggedout();
-          navigationManager.NavigateTo("/login");
+          Console.WriteLine("");
         }
       }
-      else
+      catch(Exception ex)
       {
-        Console.WriteLine("");
+        Console.WriteLine(ex);
       }
+
 
     }
   }

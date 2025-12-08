@@ -7,16 +7,16 @@ using System.IdentityModel.Tokens.Jwt;
 [ApiController]
 public class AuthController : ControllerBase
 {
-  ITokenService _tokenService;
-  IConfiguration _configuration;
-  JwtSecurityTokenHandler JwtSecurityTokenHandler { get; set; } 
-  AuthController(ITokenService tokenService, IConfiguration configuration)
+  public ITokenService _tokenService;
+  public IConfiguration _configuration;
+  public JwtSecurityTokenHandler JwtSecurityTokenHandler { get; set; } 
+  public AuthController(ITokenService tokenService, IConfiguration configuration)
   {
     _tokenService = tokenService;
     _configuration = configuration;
   }
 
-  [HttpPost("/login")]
+  [HttpPost("login")]
   [IgnoreAntiforgeryToken]
   public async Task<IActionResult> Login([FromBody] LoginModel model)
   {

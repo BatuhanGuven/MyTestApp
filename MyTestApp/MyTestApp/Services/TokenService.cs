@@ -12,7 +12,7 @@ public class TokenService : ITokenService
   public string GetToken(string mail, string role, IConfiguration configuration)
   {
     SecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:JwtSecurtityKey"]));
-    SigningCredentials signingCredentials = new SigningCredentials(securityKey, "SHA-256");
+    SigningCredentials signingCredentials = new SigningCredentials(securityKey, "HS256");
     var claims = new[]
     {
       new Claim("mail",$"{mail}"),

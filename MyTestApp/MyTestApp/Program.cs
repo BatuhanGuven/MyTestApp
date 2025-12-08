@@ -5,7 +5,7 @@ using MyTestApp.Components;
 using MyTestApp.Providers;
 using MyTestApp.Services;
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddControllers();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
@@ -14,6 +14,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddSingleton<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -30,9 +31,10 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.MapControllers();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(MyTestApp.Client._Imports).Assembly);
-
 app.Run();
