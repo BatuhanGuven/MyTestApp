@@ -10,12 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyTestApp.Client\MyTestApp.Client.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.22" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.22" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <!-- Keep server-appropriate packages only -->
     <PackageReference Include="MudBlazor" Version="8.15.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

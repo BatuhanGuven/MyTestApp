@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Server;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using MyTestApp.Components;
 using MyTestApp.Providers;
@@ -11,7 +14,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddMudServices();
 builder.Services.AddHttpClient();
-builder.Services.AddAuthorizationCore();
 builder.Services.AddSingleton<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -26,9 +28,7 @@ else
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
-app.UseRouting();
 app.UseHttpsRedirection();
-app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapControllers();

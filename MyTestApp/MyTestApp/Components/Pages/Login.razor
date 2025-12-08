@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @layout MyTestApp.Components.Layout.LoginLayout
+@rendermode InteractiveServer
 @inject HttpClient httpClient
 @inject CustomAuthenticationStateProvider customAuthenticationStateProvider
 @inject NavigationManager navigationManager
@@ -57,8 +58,8 @@
     {
       try
       {
-        HttpClient httpClient = httpClientFactory.CreateClient();
-        HttpResponseMessage? response = await httpClient.PostAsJsonAsync("https://localhost:7244/api/Auth/login", LoginModelObject);
+        HttpClient httpClient = httpClientFactory.CreateClient("ServerAPI");
+        HttpResponseMessage? response = await httpClient.PostAsJsonAsync("/api/Auth/login", LoginModelObject);
         if (response is not null)
         {
           LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
@@ -69,7 +70,7 @@
               try
               {
                 customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
-                navigationManager.NavigateTo("/");
+                navigationManager.NavigateTo("/",true);
                 StateHasChanged();
               }catch (NavigationException ex)
               {
