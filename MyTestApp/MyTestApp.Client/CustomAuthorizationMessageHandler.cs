@@ -1,12 +1,24 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-
+using MyTestApp.Client.Providers;
+using MyTestApp.Providers;
+using System.Security.Claims;
 namespace MyTestApp.Client;
 
-public class CustomAuthorizationMessageHandler : AuthorizationMessageHandler 
+public class CustomAuthorizationMessageHandler
 {
-  public CustomAuthorizationMessageHandler(IAccessTokenProvider provider, NavigationManager navigation) : base(provider, navigation)
+  private readonly ICustomAuthenticationStateProvider _customAuthenticationStateProvider;
+  private ClaimsPrincipal _claimsPrincipal;
+  public CustomAuthorizationMessageHandler(ICustomAuthenticationStateProvider customAuthenticationStateProvider, HttpClient httpClient)
   {
-    ConfigureHandler(authorizedUrls: new[] { "https://localhost:7204" });
+    _customAuthenticationStateProvider = customAuthenticationStateProvider;
+    _customAuthenticationStateProvider.GetClaimsPrincipal();
+  }
+  public async Task SendAsync()
+  {
+    if(_claimsPrincipal is not null)
+    {
+
+    }
   }
 }

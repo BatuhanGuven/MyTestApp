@@ -1,6 +1,6 @@
 ﻿@page "/login"
-@layout MyTestApp.Components.Layout.LoginLayout
-@rendermode InteractiveServer
+@layout MyTestApp.Client.Layout.LoginLayout
+@rendermode InteractiveAuto
 @inject HttpClient httpClient
 @inject CustomAuthenticationStateProvider customAuthenticationStateProvider
 @inject NavigationManager navigationManager
@@ -47,7 +47,7 @@
       try
       {
         var client = httpClientFactory.CreateClient("ServerAPI");
-        var response = await client.PostAsJsonAsync("/api/Auth/login", LoginModelObject);
+        var response = await client.PostAsJsonAsync("https://localhost:7244/api/Auth/login", LoginModelObject);
 
         if (response.IsSuccessStatusCode)
         {
@@ -60,13 +60,12 @@
         }
         else
         {
-          // Hatalı giriş durumunda kullanıcıyı bilgilendirebilirsiniz veya çıkış işlemi yapabilirsiniz
           customAuthenticationStateProvider.MarkUserAsLoggedout();
         }
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-        // Hata loglama işlemi buraya eklenebilir
+        throw new Exception(ex.Message);
       }
     }
   }
