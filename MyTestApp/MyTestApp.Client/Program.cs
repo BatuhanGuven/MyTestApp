@@ -14,7 +14,7 @@ builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 
-// Register implementation and interface mappings so DI can resolve ICustomAuthenticationStateProvider
+
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<ICustomAuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());

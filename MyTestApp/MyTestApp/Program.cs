@@ -31,6 +31,7 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(
     };
   }
   );
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -46,7 +47,10 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

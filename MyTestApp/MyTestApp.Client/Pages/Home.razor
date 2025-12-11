@@ -1,4 +1,5 @@
 ﻿@page "/"
+@rendermode InteractiveAuto
 @using Models
 @using System.Net.Http.Json
 @inject IHttpClientFactory HttpClientFactory
@@ -16,7 +17,7 @@
     </RowTemplate>
   </MudTable>
 }
-<MudButton @onclick = "(e)=>FetchUser()">
+<MudButton ButtonType = "ButtonType.Button" @onclick = "(e)=>FetchUser()">
   Getir
 </MudButton>
 @code {
@@ -26,7 +27,7 @@
   CancellationToken token;
 
   protected override async Task OnInitializedAsync()
-  {
+  { 
     httpClient = HttpClientFactory.CreateClient("ServerAPI");
     cts = new CancellationTokenSource();
     token = cts.Token;

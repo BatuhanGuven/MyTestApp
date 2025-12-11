@@ -1,9 +1,9 @@
 ﻿@page "/login"
-@layout MyTestApp.Client.Layout.LoginLayout
+@rendermode InteractiveWebAssembly
 
+@layout MyTestApp.Client.Layout.LoginLayout
 @using MyTestApp.Models
 
-@rendermode InteractiveWebAssembly
 @inject HttpClient httpClient
 @inject CustomAuthenticationStateProvider customAuthenticationStateProvider
 @inject NavigationManager navigationManager
@@ -25,8 +25,7 @@
           <MudLink Href="/forgotpassword" Typo="Typo.subtitle2">Şifremi Unuttum</MudLink>
         </div>
 
-        <!-- Debug: butonu her zaman aktif yap (test amaçlı) -->
-        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6" OnClick="MySubmitVoid">
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6" OnClick="MySubmitVoid">
           Giriş Yap
         </MudButton>
       </MudForm>

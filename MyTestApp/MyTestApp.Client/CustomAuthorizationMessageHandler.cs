@@ -6,25 +6,30 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 namespace MyTestApp.Client;
 
-public class CustomAuthorizationMessageHandler:DelegatingHandler
+public class CustomAuthorizationMessageHandler : DelegatingHandler
 {
   private readonly ICustomAuthenticationStateProvider _customAuthenticationStateProvider;
   public CustomAuthorizationMessageHandler(ICustomAuthenticationStateProvider customAuthenticationStateProvider)
   {
     _customAuthenticationStateProvider = customAuthenticationStateProvider;
   }
-  public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken)
+
+  protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken)
   {
-    var _token = _customAuthenticationStateProvider.GetToken();
-    if(_token is not null)
+    var token = _customAuthenticationStateProvider.GetToken();
+
+    if (!string.IsNullOrEmpty(token))
     {
-      httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-      return await base.SendAsync(httpRequestMessage, cancellationToken);
+      if (httpRequestMessage.Headers.Authorization == null)
+      {
+        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+      }
     }
     else
     {
-      Console.WriteLine("Token olmadığı için istek API ye gönderilemedi");
-      return new HttpResponseMessage(System.Net.HttpStatusCode.Unauthorized);
+      Console.WriteLine("No token available; sending request without Authorization header.");
     }
+
+    return await base.SendAsync(httpRequestMessage, cancellationToken);
   }
 }
