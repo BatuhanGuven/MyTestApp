@@ -2,17 +2,16 @@
 @rendermode InteractiveWebAssembly
 
 @layout MyTestApp.Client.Layout.LoginLayout
+@using MyTestApp.Client.Providers
 @using MyTestApp.Models
-
 @inject HttpClient httpClient
-@inject CustomAuthenticationStateProvider customAuthenticationStateProvider
+@inject ICustomAuthenticationStateProvider customAuthenticationStateProvider
 @inject NavigationManager navigationManager
 @inject IHttpClientFactory httpClientFactory
 
-
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center pt-10">
   <MudCard Elevation="20" Class="pa-6" Style="width: 100%;">
-    <MudCardHeader>
+    <MudCardHeader> 
       <MudText Typo="Typo.h4" Align="Align.Center">Hesabınıza Giriş Yapın</MudText>
     </MudCardHeader>
     <MudCardContent>
@@ -56,7 +55,6 @@
   {
     await form.Validate();
 
-    // Log form validity
     Console.WriteLine($"Form.IsValid = {form.IsValid}");
 
     if (form.IsValid)
@@ -74,9 +72,8 @@
           var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
           if (result is not null)
           {
-            // Eğer Token property boşsa bunu burada loglayın
             Console.WriteLine($"Received token length: {result.Token?.Length}");
-            customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
+            await customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
             navigationManager.NavigateTo("/");
             return;
           }
@@ -88,7 +85,7 @@
           var body = await response.Content.ReadAsStringAsync();
           Console.WriteLine($"Login failed. Body: {body}");
           errors = new[] { string.IsNullOrWhiteSpace(body) ? $"Giriş başarısız. Kod: {(int)response.StatusCode}" : body };
-          customAuthenticationStateProvider.MarkUserAsLoggedout();
+          await customAuthenticationStateProvider.MarkUserAsLoggedout();
           StateHasChanged();
         }
       }

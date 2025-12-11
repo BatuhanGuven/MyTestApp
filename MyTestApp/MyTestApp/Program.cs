@@ -8,6 +8,7 @@ using MudBlazor.Services;
 using MyTestApp.Components;
 using MyTestApp.Providers;
 using MyTestApp.Services;
+using MyTestApp.Client.Providers;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddRazorComponents()
@@ -15,8 +16,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddMudServices();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(
   options =>

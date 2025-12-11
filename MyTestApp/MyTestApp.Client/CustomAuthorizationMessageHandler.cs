@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using MyTestApp.Client.Providers;
-using MyTestApp.Providers;
+
 using System.Net.Http.Headers;
 using System.Security.Claims;
 namespace MyTestApp.Client;
 
 public class CustomAuthorizationMessageHandler : DelegatingHandler
 {
-  private readonly ICustomAuthenticationStateProvider _customAuthenticationStateProvider;
-  public CustomAuthorizationMessageHandler(ICustomAuthenticationStateProvider customAuthenticationStateProvider)
+  private readonly ILocalStorageService _localStorageService;
+  public CustomAuthorizationMessageHandler(ILocalStorageService localStorageService)
   {
-    _customAuthenticationStateProvider = customAuthenticationStateProvider;
+    _localStorageService = localStorageService;
   }
 
   protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken)
   {
-    var token = _customAuthenticationStateProvider.GetToken();
+    var token = await _localStorageService.GetItemAsync<string>("authToken");
 
     if (!string.IsNullOrEmpty(token))
     {

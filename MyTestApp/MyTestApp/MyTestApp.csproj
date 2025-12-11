@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
     <PackageReference Include="MudBlazor" Version="8.15.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
@@ -19,10 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MyTestApp.Client\MyTestApp.Client.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Providers\" />
   </ItemGroup>
 
 </Project>

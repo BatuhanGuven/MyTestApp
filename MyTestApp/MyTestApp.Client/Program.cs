@@ -5,6 +5,7 @@ using MyTestApp.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
+using Blazored.LocalStorage;
 using MyTestApp.Client.Providers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -13,12 +14,8 @@ builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
 builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
-
-
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<ICustomAuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
-builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
-    
+builder.Services.AddScoped<ICustomAuthenticationStateProvider,CustomAuthenticationStateProvider>();
+builder.Services.AddBlazoredLocalStorage(); 
 builder.Services.AddHttpClient("ServerAPI", client =>
 {
   client.BaseAddress = new Uri(builder.Configuration["BaseAdress"] ?? builder.HostEnvironment.BaseAddress);

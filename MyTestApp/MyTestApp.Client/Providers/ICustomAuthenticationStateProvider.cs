@@ -6,8 +6,7 @@ namespace MyTestApp.Client.Providers;
 
 public interface ICustomAuthenticationStateProvider
 {
-  public void MarkUserAsAuthenticated(string token);
-  public void MarkUserAsLoggedout();
+  public Task MarkUserAsAuthenticated(string token);
+  public Task MarkUserAsLoggedout();
   public ClaimsPrincipal GetClaimsPrincipal();
-  public string GetToken();
 }
