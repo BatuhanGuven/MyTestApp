@@ -37,9 +37,31 @@ public class CustomAuthenticationStateProvider: AuthenticationStateProvider, ICu
     return _claimsPrincipal;
   }
 
-  public override Task<AuthenticationState> GetAuthenticationStateAsync()
+  public override async Task<AuthenticationState> GetAuthenticationStateAsync()
   {
-    return Task.FromResult(new AuthenticationState(_claimsPrincipal));
+    var token = await _localStorageService.GetItemAsync<string>("authToken");
+
+    if (!string.IsNullOrWhiteSpace(token))
+    {
+      try
+      {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var claimsIdentity = new ClaimsIdentity(jwtToken.Claims, "jwt");
+        _claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+      }
+      catch
+      {
+        await _localStorageService.RemoveItemAsync("authToken");
+        _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+      }
+    }
+    else
+    {
+      _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+    }
+
+    return new AuthenticationState(_claimsPrincipal);
   }
 
 }

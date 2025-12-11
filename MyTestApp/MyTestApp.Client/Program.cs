@@ -14,7 +14,8 @@ builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
 builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<ICustomAuthenticationStateProvider,CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<ICustomAuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddBlazoredLocalStorage(); 
 builder.Services.AddHttpClient("ServerAPI", client =>
 {

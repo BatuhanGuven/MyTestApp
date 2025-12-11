@@ -9,6 +9,7 @@ using MyTestApp.Components;
 using MyTestApp.Providers;
 using MyTestApp.Services;
 using MyTestApp.Client.Providers;
+using Blazored.LocalStorage;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddRazorComponents()
@@ -31,6 +32,9 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(
   }
   );
 builder.Services.AddAuthorization();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<ICustomAuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 var app = builder.Build();
 

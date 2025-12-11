@@ -11,7 +11,7 @@ public class TokenService : ITokenService
 {
   public string GetToken(string mail, string role, IConfiguration configuration)
   {
-    SecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:JwtSecurityKey"]));
+    SecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
     SigningCredentials signingCredentials = new SigningCredentials(securityKey, "HS256");
     var claims = new[]
     {
