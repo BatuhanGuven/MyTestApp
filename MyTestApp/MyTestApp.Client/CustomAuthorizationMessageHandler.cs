@@ -9,14 +9,13 @@ namespace MyTestApp.Client;
 public class CustomAuthorizationMessageHandler:DelegatingHandler
 {
   private readonly ICustomAuthenticationStateProvider _customAuthenticationStateProvider;
-  private string _token;  
   public CustomAuthorizationMessageHandler(ICustomAuthenticationStateProvider customAuthenticationStateProvider)
   {
     _customAuthenticationStateProvider = customAuthenticationStateProvider;
-    _token = _customAuthenticationStateProvider.GetToken();
   }
   public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken)
   {
+    var _token = _customAuthenticationStateProvider.GetToken();
     if(_token is not null)
     {
       httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);

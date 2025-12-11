@@ -24,4 +24,10 @@ builder.Services.AddHttpClient("ServerAPI", client =>
   client.BaseAddress = new Uri(builder.Configuration["BaseAdress"] ?? builder.HostEnvironment.BaseAddress);
 }).AddHttpMessageHandler<CustomAuthorizationMessageHandler>();
 
+builder.Services.AddHttpClient("PublicAPI", client =>
+{
+  client.BaseAddress = new Uri(builder.Configuration["BaseAdress"] ?? builder.HostEnvironment.BaseAddress);
+});
+
+
 await builder.Build().RunAsync();

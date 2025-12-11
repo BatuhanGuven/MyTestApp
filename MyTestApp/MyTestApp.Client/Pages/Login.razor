@@ -3,7 +3,7 @@
 
 @using MyTestApp.Models
 
-@rendermode InteractiveAuto
+@rendermode InteractiveWebAssembly
 @inject HttpClient httpClient
 @inject CustomAuthenticationStateProvider customAuthenticationStateProvider
 @inject NavigationManager navigationManager
@@ -25,10 +25,21 @@
           <MudLink Href="/forgotpassword" Typo="Typo.subtitle2">Şifremi Unuttum</MudLink>
         </div>
 
-        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" FullWidth="true" Class="mt-6" OnClick="MySubmitVoid">
+        <!-- Debug: butonu her zaman aktif yap (test amaçlı) -->
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6" OnClick="MySubmitVoid">
           Giriş Yap
         </MudButton>
       </MudForm>
+
+      @if (errors?.Length > 0)
+      {
+        <div class="mt-4">
+          @foreach (var e in errors)
+          {
+            <MudText Color="Color.Error">@e</MudText>
+          }
+        </div>
+      }
     </MudCardContent>
     <MudCardActions Class="d-flex justify-center">
       <MudText Typo="Typo.subtitle2">Hesabınız yok mu? <MudLink Href="/register">Kaydolun</MudLink></MudText>
@@ -37,7 +48,7 @@
 </MudContainer>
 
 @code {
-  MudForm form;
+  MudForm form;   
   bool success;
   string[] errors = { };
   public LoginModel LoginModelObject = new LoginModel();
@@ -45,31 +56,54 @@
   private async Task MySubmitVoid()
   {
     await form.Validate();
+
+    // Log form validity
+    Console.WriteLine($"Form.IsValid = {form.IsValid}");
+
     if (form.IsValid)
     {
       try
       {
-        var client = httpClientFactory.CreateClient("ServerAPI");
+        var client = httpClientFactory.CreateClient("PublicAPI");
+        Console.WriteLine("Sending login request to https://localhost:7244/api/Auth/login");
         var response = await client.PostAsJsonAsync("https://localhost:7244/api/Auth/login", LoginModelObject);
+
+        Console.WriteLine($"Login response status: {(int)response.StatusCode} {response.ReasonPhrase}");
 
         if (response.IsSuccessStatusCode)
         {
           var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
           if (result is not null)
           {
+            // Eğer Token property boşsa bunu burada loglayın
+            Console.WriteLine($"Received token length: {result.Token?.Length}");
             customAuthenticationStateProvider.MarkUserAsAuthenticated(result.Token);
-            navigationManager.NavigateTo("/", true);
+            navigationManager.NavigateTo("/");
+            return;
           }
+          errors = new[] { "Sunucudan beklenen yanıt alınamadı." };
+          StateHasChanged();
         }
         else
         {
+          var body = await response.Content.ReadAsStringAsync();
+          Console.WriteLine($"Login failed. Body: {body}");
+          errors = new[] { string.IsNullOrWhiteSpace(body) ? $"Giriş başarısız. Kod: {(int)response.StatusCode}" : body };
           customAuthenticationStateProvider.MarkUserAsLoggedout();
+          StateHasChanged();
         }
       }
       catch (Exception ex)
       {
-        throw new Exception(ex.Message);
+        Console.WriteLine($"Exception during login: {ex}");
+        errors = new[] { ex.Message };
+        StateHasChanged();
       }
+    }
+    else
+    {
+      errors = new[] { "Lütfen tüm alanları doldurun ve formu doğrulayın." };
+      StateHasChanged();
     }
   }
 }
