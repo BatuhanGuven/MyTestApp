@@ -8,15 +8,14 @@ namespace MyTestApp.Providers;
 public class CustomAuthenticationStateProvider: AuthenticationStateProvider, ICustomAuthenticationStateProvider
 {
   private ClaimsPrincipal _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
-
+  private string _token;
   public void MarkUserAsAuthenticated(string token)
   {
     var handler = new JwtSecurityTokenHandler();
     var jwtToken = handler.ReadJwtToken(token);
     var claimsIdentity = new ClaimsIdentity(jwtToken.Claims, "jwt");
-
+    _token = token;
     _claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_claimsPrincipal)));
   }
 
@@ -24,6 +23,10 @@ public class CustomAuthenticationStateProvider: AuthenticationStateProvider, ICu
   {
     _claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
     NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_claimsPrincipal)));
+  }
+  public string GetToken()
+  {
+    return _token;
   }
   public ClaimsPrincipal GetClaimsPrincipal()
   {

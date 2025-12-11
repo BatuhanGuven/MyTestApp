@@ -8,5 +8,6 @@ public interface ICustomAuthenticationStateProvider
 {
   public void MarkUserAsAuthenticated(string token);
   public void MarkUserAsLoggedout();
-  public ClaimsPrincipal GetClaimsPrincipal();  
+  public ClaimsPrincipal GetClaimsPrincipal();
+  public string GetToken();
 }

@@ -5,6 +5,7 @@ using MyTestApp.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
+using MyTestApp.Client.Providers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -13,9 +14,11 @@ builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 
+// Register implementation and interface mappings so DI can resolve ICustomAuthenticationStateProvider
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<ICustomAuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
-
+    
 builder.Services.AddHttpClient("ServerAPI", client =>
 {
   client.BaseAddress = new Uri(builder.Configuration["BaseAdress"] ?? builder.HostEnvironment.BaseAddress);

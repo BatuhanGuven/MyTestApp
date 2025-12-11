@@ -1,7 +1,53 @@
-﻿@page "/"
+﻿@rendermode InteractiveServer
+@page "/"
+@using Models
+@using System.Net.Http.Json
+@inject IHttpClientFactory HttpClientFactory
+@if(Users is not null && Users.Any())
+{
+  <MudTable Items="@Users" Hover="true" Breakpoint="Breakpoint.Sm">
+    <HeaderContent>
+      <MudTh>Name</MudTh>
+      <MudTh>Position</MudTh>
+    </HeaderContent>
 
-<PageTitle>Home</PageTitle>
+    <RowTemplate>
+      <MudTd DataLabel="Name">@context.Name</MudTd>
+      <MudTd DataLabel="Position">@context.Position</MudTd>
+    </RowTemplate>
+  </MudTable>
+}
+<MudButton @onclick = "(e)=>FetchUser()">
+  Getir
+</MudButton>
+@code {
+  List<User>? Users = new();
+  HttpClient httpClient;
+  CancellationTokenSource cts;
+  CancellationToken token;
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+  protected override async Task OnInitializedAsync()
+  {
+    httpClient = HttpClientFactory.CreateClient("ServerAPI");
+    cts = new CancellationTokenSource();
+    token = cts.Token;
+  }
+  private async Task FetchUser()
+  {
+    try
+    {
+      var options = new System.Text.Json.JsonSerializerOptions
+      {
+        PropertyNameCaseInsensitive = true
+      };
+      Users = await httpClient.GetFromJsonAsync<List<User>>(
+          "https://localhost:7244/api/User/users",
+          options,
+          cts.Token
+      );
+    }catch (Exception ex)
+    {
+      Console.WriteLine($"{ex}");
+    }
+  }
+}

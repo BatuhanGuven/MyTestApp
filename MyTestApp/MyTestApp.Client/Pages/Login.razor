@@ -1,11 +1,14 @@
 ﻿@page "/login"
 @layout MyTestApp.Client.Layout.LoginLayout
+
+@using MyTestApp.Models
+
 @rendermode InteractiveAuto
 @inject HttpClient httpClient
 @inject CustomAuthenticationStateProvider customAuthenticationStateProvider
 @inject NavigationManager navigationManager
 @inject IHttpClientFactory httpClientFactory
-@using Models
+
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center pt-10">
   <MudCard Elevation="20" Class="pa-6" Style="width: 100%;">
