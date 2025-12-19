@@ -1,0 +1,32 @@
+﻿@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+
+<MudNavMenu>
+  <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Ana Sayfa</MudNavLink>
+
+  <AuthorizeView>
+    <Authorized>
+      <MudNavGroup Title="Hesabım" Icon="@Icons.Material.Filled.Person" Expanded="false">
+        <MudNavLink Href="/profile" Icon="@Icons.Material.Filled.Settings">Profil Ayarları</MudNavLink>
+        <MudNavLink OnClick="HandleLogout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Error">
+          Çıkış Yap
+        </MudNavLink>
+      </MudNavGroup>
+    </Authorized>
+
+    <NotAuthorized>
+      <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Login" IconColor="Color.Primary">
+        Giriş Yap
+      </MudNavLink>
+    </NotAuthorized>
+  </AuthorizeView>
+</MudNavMenu>
+
+@code {
+  private async Task HandleLogout()
+  {
+    await AuthenticationService.Logout();
+    NavigationManager.NavigateTo("/login", forceLoad: true);
+
+  }
+}

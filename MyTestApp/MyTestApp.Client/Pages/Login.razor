@@ -1,0 +1,78 @@
+﻿@page "/login"
+@layout MyTestApp.Client.Layout.LoginLayout
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject IAuthenticationService authenticationService
+@rendermode InteractiveAuto
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center pt-10">
+  <MudCard Elevation="20" Class="pa-6" Style="width: 100%;">
+    <MudCardHeader>
+      <MudText Typo="Typo.h4" Align="Align.Center">Hesabınıza Giriş Yapın</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+      <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" Model="LoginModel">
+        <MudTextField T="string" Label="E-posta Adresi" Required="true" InputType="InputType.Email" Immediate="true" @bind-Value="LoginModel.Mail" />
+        <MudTextField T="string" Label="Şifre" Required="true" InputType="InputType.Password" Class="mt-3" @bind-Value="LoginModel.Password" />
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="mt-6" OnClick="MySubmitVoid">
+          Giriş Yap
+        </MudButton>
+      </MudForm>
+
+      @if (errors?.Length > 0)
+      {
+        <div class="mt-4">
+          @foreach (var e in errors)
+          {
+            <MudText Color="Color.Error">@e</MudText>
+          }
+        </div>
+      }
+    </MudCardContent>
+    <MudCheckBox T="bool" Label="Beni Hatırla" @bind-Value="LoginModel.RememberMe" />
+  </MudCard>
+</MudContainer>
+
+@code {
+    MudForm? form;
+
+  bool success;
+  string[] errors = { };
+  public LoginModel LoginModel = new LoginModel() { Mail = "", Password = "" };
+
+  private async Task MySubmitVoid()
+  {
+    await form!.Validate();
+
+    Console.WriteLine($"Form.IsValid = {form.IsValid}");
+
+    if (form.IsValid)
+    {
+      try
+      {
+        var serviceResponse = await authenticationService.Login(LoginModel);
+        if (serviceResponse.Success)
+        {
+          navigationManager.NavigateTo("/");
+          StateHasChanged();
+        }
+        else
+        {
+          errors = errors.Append(serviceResponse.Message).ToArray();
+          StateHasChanged();
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Exception during login: {ex}");
+        errors = errors.Append(ex.Message).ToArray();
+        StateHasChanged();
+      }
+    }
+    else
+    {
+      errors = new[] { "Lütfen tüm alanları doldurun ve formu doğrulayın." };
+      StateHasChanged();
+    }
+  }
+}
