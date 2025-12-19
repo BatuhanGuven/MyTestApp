@@ -45,7 +45,10 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(
   );
 builder.Services.AddAuthorization();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProviderServer>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<CustomAuthenticationStateProviderServer>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+    sp.GetRequiredService<CustomAuthenticationStateProviderServer>());
 builder.Services.AddHttpClient("PrivateAPI", client =>
 {
   client.BaseAddress = new Uri(builder.Configuration["BaseAddress"]);
