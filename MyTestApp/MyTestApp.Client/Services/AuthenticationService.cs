@@ -10,11 +10,11 @@ namespace MyTestApp.Client.Service;
 public class AuthenticationService : IAuthenticationService
 {
   private readonly HttpClient _privateHttpClient;
-  private readonly AuthenticationStateProvider _authStateProvider;
+  private readonly CustomAuthenticationStateProviderClient _customAuthenticationStateProviderClient;
 
-  public AuthenticationService(AuthenticationStateProvider authStateProvider, IHttpClientFactory httpClientFactory)
+  public AuthenticationService(CustomAuthenticationStateProviderClient customAuthenticationStateProviderClient, IHttpClientFactory httpClientFactory)
   {
-    _authStateProvider = authStateProvider;
+    _customAuthenticationStateProviderClient = customAuthenticationStateProviderClient;
     _privateHttpClient = httpClientFactory.CreateClient("PrivateAPI");
   }
 
@@ -26,11 +26,7 @@ public class AuthenticationService : IAuthenticationService
 
       if (response.IsSuccessStatusCode)
       {
-        if (_authStateProvider is CustomAuthenticationStateProvider customAuthenticationStateProvider)
-        {
-          customAuthenticationStateProvider.NotifyUserLogin();
-        }
-
+        _customAuthenticationStateProviderClient.NotifyUserLogin();
         return new ServiceResponse { Success = true };
       }
       var errorContent = await response.Content.ReadAsStringAsync();
@@ -48,10 +44,9 @@ public class AuthenticationService : IAuthenticationService
     {
       if (response.IsSuccessStatusCode)
       {
-        if(_authStateProvider is CustomAuthenticationStateProvider customAuthenticationStateProvider)
-        {
-          customAuthenticationStateProvider.NotifyUserLogout();
-        }
+
+        _customAuthenticationStateProviderClient.NotifyUserLogout();
+
         return new ServiceResponse { Success = true };
       }
       else
