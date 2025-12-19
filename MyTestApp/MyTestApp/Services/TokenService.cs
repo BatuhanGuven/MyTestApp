@@ -30,8 +30,8 @@ public class TokenService : ITokenService
   {
     var claims = new[]
     {
-      new Claim("Mail", mail),
-      new Claim("Position", position)
+        new Claim(ClaimTypes.Email, mail),
+        new Claim(ClaimTypes.Role, position)
     };
 
     var expireTime = rememberMe ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddHours(1);

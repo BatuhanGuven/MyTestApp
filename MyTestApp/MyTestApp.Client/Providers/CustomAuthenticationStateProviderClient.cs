@@ -2,13 +2,15 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using MyTestApp.Shared.Models;
+using System.Reflection;
+
 namespace MyTestApp.Client.Providers;
 
-public class CustomAuthenticationStateProvider : AuthenticationStateProvider
+public class CustomAuthenticationStateProviderClient : AuthenticationStateProvider, IAuthStateProvider
 {
   private readonly HttpClient _httpClient;
 
-  public CustomAuthenticationStateProvider(IHttpClientFactory httpClientFactory)
+  public CustomAuthenticationStateProviderClient(IHttpClientFactory httpClientFactory)
       => _httpClient = httpClientFactory.CreateClient("PrivateAPI") ?? throw new ArgumentNullException(nameof(httpClientFactory));
 
   public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -21,8 +23,8 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
       {
         var claims = new List<Claim>
             {
-                new(ClaimTypes.Email, userInfo.Mail),
-                new(ClaimTypes.Role, userInfo.Position)
+                new Claim(ClaimTypes.Email, userInfo.Claims.GetValueOrDefault("Mail")),
+                new Claim(ClaimTypes.Role, userInfo.Claims.GetValueOrDefault("Position"))
             };
 
         var claimsIdentity = new ClaimsIdentity(claims, "Custom");
@@ -35,7 +37,6 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
       Console.WriteLine(ex);
     }
-
     return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
   }
   public void NotifyUserLogin()
