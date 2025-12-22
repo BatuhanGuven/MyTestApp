@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using MyTestApp.Shared.Models;
-using System.Reflection;
+using Shared.Models; // Namespace'i projenize göre kontrol edin
 
 namespace MyTestApp.Client.Providers;
 
@@ -21,30 +21,40 @@ public class CustomAuthenticationStateProviderClient : AuthenticationStateProvid
 
       if (userInfo is not null && userInfo.IsAuthenticated)
       {
-        var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, userInfo.Claims.GetValueOrDefault("Mail")),
-                new Claim(ClaimTypes.Role, userInfo.Claims.GetValueOrDefault("Position"))
-            };
+        // DÜZELTME BURADA:
+        // Sunucu "ClaimTypes.Email" kullanıyorsa, istemcide de onu aramalısınız.
+        // Garanti olsun diye hem standart tipi hem de kısa adını kontrol ediyoruz.
 
-        var claimsIdentity = new ClaimsIdentity(claims, "Custom");
-        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        var email = userInfo.Claims.GetValueOrDefault(ClaimTypes.Email)
+                    ?? userInfo.Claims.GetValueOrDefault("email")
+                    ?? userInfo.Claims.GetValueOrDefault("Mail");
 
-        return new AuthenticationState(claimsPrincipal);
+        var role = userInfo.Claims.GetValueOrDefault(ClaimTypes.Role)
+                   ?? userInfo.Claims.GetValueOrDefault("role")
+                   ?? userInfo.Claims.GetValueOrDefault("Position");
+
+        if (!string.IsNullOrEmpty(email))
+        {
+          var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Email, email),
+                        new Claim(ClaimTypes.Role, role ?? "")
+                    };
+
+          var claimsIdentity = new ClaimsIdentity(claims, "Custom");
+          var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+          return new AuthenticationState(claimsPrincipal);
+        }
       }
     }
     catch (Exception ex)
     {
-      Console.WriteLine(ex);
+      Console.WriteLine($"Auth Error: {ex.Message}");
     }
     return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
   }
-  public void NotifyUserLogin()
-  {
-    NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-  }
-  public void NotifyUserLogout()
-  {
-    NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-  }
+
+  public void NotifyUserLogin() => NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+  public void NotifyUserLogout() => NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 }

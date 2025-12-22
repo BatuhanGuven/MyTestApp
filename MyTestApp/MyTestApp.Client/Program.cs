@@ -17,7 +17,7 @@ builder.Services.AddScoped<IAuthStateProvider>(sp => sp.GetRequiredService<Custo
 
 // service registrations
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<AntiForgeryTokenHandler>();
+builder.Services.AddTransient<AntiForgeryTokenHandler>();
 builder.Services.AddTransient<AntiForgeryTokenHandler>();
 builder.Services.AddHttpClient("PrivateAPI", client =>
 {

@@ -3,7 +3,7 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 @inject IAuthenticationService authenticationService
-@rendermode InteractiveAuto
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center pt-10">
   <MudCard Elevation="20" Class="pa-6" Style="width: 100%;">
@@ -34,7 +34,7 @@
 </MudContainer>
 
 @code {
-    MudForm? form;
+  MudForm? form;
 
   bool success;
   string[] errors = { };

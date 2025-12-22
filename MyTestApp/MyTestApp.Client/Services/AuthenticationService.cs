@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
 using MyTestApp.Client.Providers;
 using MyTestApp.Shared.Models;
 using Shared.Models;
@@ -10,11 +9,13 @@ namespace MyTestApp.Client.Service;
 public class AuthenticationService : IAuthenticationService
 {
   private readonly HttpClient _privateHttpClient;
-  private readonly CustomAuthenticationStateProviderClient _customAuthenticationStateProviderClient;
+  
+  private readonly AuthenticationStateProvider _authStateProvider;
 
-  public AuthenticationService(CustomAuthenticationStateProviderClient customAuthenticationStateProviderClient, IHttpClientFactory httpClientFactory)
+  
+  public AuthenticationService(AuthenticationStateProvider authStateProvider, IHttpClientFactory httpClientFactory)
   {
-    _customAuthenticationStateProviderClient = customAuthenticationStateProviderClient;
+    _authStateProvider = authStateProvider;
     _privateHttpClient = httpClientFactory.CreateClient("PrivateAPI");
   }
 
@@ -26,33 +27,38 @@ public class AuthenticationService : IAuthenticationService
 
       if (response.IsSuccessStatusCode)
       {
-        _customAuthenticationStateProviderClient.NotifyUserLogin();
+        // BURASI KRİTİK: Gelen provider'ın Client versiyonu olup olmadığını kontrol ediyoruz.
+        // Eğer sunucuda çalışıyorsa bu blok güvenli bir şekilde atlanır ve hata vermez.
+        if (_authStateProvider is CustomAuthenticationStateProviderClient clientProvider)
+        {
+          clientProvider.NotifyUserLogin();
+        }
+
         return new ServiceResponse { Success = true };
       }
       var errorContent = await response.Content.ReadAsStringAsync();
       return new ServiceResponse { Success = false, Message = errorContent };
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       return new ServiceResponse { Success = false, Message = "Sunucuya bağlanılamadı." };
     }
   }
+
   public async Task<ServiceResponse> Logout()
   {
-    var response = await _privateHttpClient.PostAsync("/api/Auth/logout", null);
     try
     {
+      var response = await _privateHttpClient.PostAsync("/api/Auth/logout", null);
       if (response.IsSuccessStatusCode)
       {
-
-        _customAuthenticationStateProviderClient.NotifyUserLogout();
-
+        if (_authStateProvider is CustomAuthenticationStateProviderClient clientProvider)
+        {
+          clientProvider.NotifyUserLogout();
+        }
         return new ServiceResponse { Success = true };
       }
-      else
-      {
-        return new ServiceResponse { Success = false, Message = await response.Content.ReadAsStringAsync() };
-      }
+      return new ServiceResponse { Success = false, Message = await response.Content.ReadAsStringAsync() };
     }
     catch (Exception ex)
     {
