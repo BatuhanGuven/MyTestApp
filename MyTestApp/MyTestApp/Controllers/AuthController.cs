@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyTestApp.Shared.Models;
 using MyTestApp.Services;
+using MyTestApp.Shared.Models;
 using System.Security.Claims;
 
 namespace MyTestApp.Controller
@@ -26,7 +26,7 @@ namespace MyTestApp.Controller
 
       string token = _tokenService.GetToken(model.Mail, "Admin", model.RememberMe);
 
-      var expires = model.RememberMe  
+      var expires = model.RememberMe
           ? DateTimeOffset.UtcNow.AddDays(7)
           : DateTimeOffset.UtcNow.AddHours(1);
 

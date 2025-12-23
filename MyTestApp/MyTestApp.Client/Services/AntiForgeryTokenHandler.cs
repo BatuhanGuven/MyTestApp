@@ -13,7 +13,7 @@ public class AntiForgeryTokenHandler : DelegatingHandler
   protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
   {
     AntiforgeryRequestToken? antiForgeryToken = _antiForgeryStateProvider.GetAntiforgeryToken();
-    if(antiForgeryToken is not null)
+    if (antiForgeryToken is not null)
     {
       request.Headers.Add("X-XSRF-TOKEN", antiForgeryToken.Value);
     }

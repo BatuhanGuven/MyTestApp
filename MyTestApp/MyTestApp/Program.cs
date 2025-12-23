@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
-using MyTestApp.Providers;
-using MyTestApp.Components;
-using MyTestApp.Services;
 using MyTestApp.Client.Service;
-using MyTestApp.Client.Providers;
+using MyTestApp.Components;
+using MyTestApp.Providers;
+using MyTestApp.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

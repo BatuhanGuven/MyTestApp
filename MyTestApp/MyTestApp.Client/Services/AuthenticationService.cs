@@ -9,10 +9,10 @@ namespace MyTestApp.Client.Service;
 public class AuthenticationService : IAuthenticationService
 {
   private readonly HttpClient _privateHttpClient;
-  
+
   private readonly AuthenticationStateProvider _authStateProvider;
 
-  
+
   public AuthenticationService(AuthenticationStateProvider authStateProvider, IHttpClientFactory httpClientFactory)
   {
     _authStateProvider = authStateProvider;

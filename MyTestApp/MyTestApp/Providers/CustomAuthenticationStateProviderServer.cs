@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace MyTestApp.Providers;
 
-public class CustomAuthenticationStateProviderServer: AuthenticationStateProvider
+public class CustomAuthenticationStateProviderServer : AuthenticationStateProvider
 {
   private readonly IHttpContextAccessor _httpContextAccessor;
   public CustomAuthenticationStateProviderServer(IHttpContextAccessor httpContextAccessor)

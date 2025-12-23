@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
+using MyTestApp.Shared.Models;
 using System.Net.Http.Json;
 using System.Security.Claims;
-using MyTestApp.Shared.Models;
-using Shared.Models; // Namespace'i projenize göre kontrol edin
 
 namespace MyTestApp.Client.Providers;
 
